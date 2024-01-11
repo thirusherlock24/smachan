@@ -1,16 +1,29 @@
-import React from 'react';
-import { Field, Form, Formik } from 'formik';
 import './Signup.css';
-import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Input,
-  FormHelperText,
-  Button,
-  
-} from '@chakra-ui/react';
+import { collection, addDoc,getDocs, getFirestore } from "firebase/firestore"; 
+import React, { useEffect } from 'react';
+import { Field, Form, Formik } from 'formik';
+import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText, Button } from '@chakra-ui/react';
+import { app, db } from './Firebase'; // Adjust the path accordingly
+
+
+// Initialize Cloud Firestore and get a reference to the service
+
+
 function Signup() {
+  useEffect(() => {
+    const fetchData = async () => {
+    try{
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+        });
+      } catch (e) {
+        console.error("Error adding/retrieving documents: ", e);
+      }
+    
+
+    }; fetchData();
+  }, []);
   const sampleName = ['thiru','priya'];
   function validateNumOrEmail(value)
   {
@@ -53,17 +66,29 @@ function Signup() {
     return 'error';
 
   }
+  const handleSubmit = async (values, actions) => {
+    try {
+      const docRef = await addDoc(collection(db, "users"), {
+        fullName: values.fullName,
+        numoremail: values.numoremail,
+        userName: values.userName,
+        password: values.password,
+      });
+      console.log("Document written with ID: ", docRef.id);
+
+      // Additional logic or redirect after successful submission
+
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
     return (
       <div className="container">
         <div className="form-container">
+          <img src="/logo.png" alt="SM" className = "logo"/>
       <Formik
-      initialValues={{ name: '', comment: '' }}
-      onSubmit={(values, actions) => {
-        setTimeout(() => {
-          alert('all good');
-          actions.setSubmitting(false);
-        }, 1000);
-      }}
+     initialValues={{ fullName: '', numoremail: '', userName: '', password: '' }}
+      onSubmit={handleSubmit}
     >{(props) => (
 
       <Form>
