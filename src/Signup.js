@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText, Button } from '@chakra-ui/react';
 import { app, db } from './Firebase'; // Adjust the path accordingly
+import { Link, Route, Routes} from 'react-router-dom';
 
 
 // Initialize Cloud Firestore and get a reference to the service
@@ -152,6 +153,7 @@ function Signup() {
 
 
         <Button
+            className="button"
             mt={4}
             colorScheme='teal'
             isLoading={props.isSubmitting}
@@ -162,6 +164,12 @@ function Signup() {
           </Form>
       )}
     </Formik>
+    <div className="switch">
+    <p>Already have account?</p>
+                <Link to='/'>
+                 Signin
+                </Link>
+        </div>
     </div>
     </div>
     )

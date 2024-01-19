@@ -1,14 +1,13 @@
-
 import './App.css';
-import Signup from './Signup.js'
-import firebase from "firebase/compat/app";
-// Required for side-effects
+import Signin from './Signin.js'
 import "firebase/firestore";
+import Navigate from './Navigate.js';
 function App() {
   
   return (
     <div className="App">
-      {<Signup/>}
+      {<Navigate/>}
+      {<Signin/>}
     </div>
   );
 }

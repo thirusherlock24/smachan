@@ -18,3 +18,16 @@
     margin-bottom: 2%;
     border-radius : 6%;
   }
+  .button{
+    align-items: center;
+    margin-left:40%;
+  }
+  .switch
+  {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .switch p{
+    margin-right:2%;
+  }
