@@ -1,0 +1,91 @@
+/* Feeds.css */
+.form{
+  margin:10px;
+  padding:2px;
+  height:100vh;
+  width:90%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .form-header {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .form-field {
+    margin-bottom: 20px;
+  }
+  
+  .form-label {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .form-textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 14px;
+  }
+  
+  .submit-button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #45a049;
+  }
+  
+  .submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .feed-item{
+    margin:5px;
+    padding:5px;
+    width:20%;
+    border: 3px solid #9a15c3;
+    border-radius: 6px;
+    display:flex;
+    justify-content: center;
+    align-items:center;
+  }
+  .modal-heading {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .modal-list {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  

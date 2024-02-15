@@ -5,84 +5,11 @@ import { Field, Form, Formik } from 'formik';
 import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText, Button } from '@chakra-ui/react';
 import { app, db } from './Firebase'; // Adjust the path accordingly
 import { Link, Route, Routes} from 'react-router-dom';
-
-
-// Initialize Cloud Firestore and get a reference to the service
-
+import SignupFunctions from './SignupFunctions'; // Import the SignupFunctions component
 
 function Signup() {
-  useEffect(() => {
-    const fetchData = async () => {
-    try{
-        const querySnapshot = await getDocs(collection(db, "users"));
-        querySnapshot.forEach((doc) => {
-          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-        });
-      } catch (e) {
-        console.error("Error adding/retrieving documents: ", e);
-      }
-    
-
-    }; fetchData();
-  }, []);
-  const sampleName = ['thiru','priya'];
-  function validateNumOrEmail(value)
-  {
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const numberPattern = /[0-9]{10}/;
-    const isValid = emailPattern.test(value) || numberPattern.test(value);
-    if (isValid) {
-      return undefined;
-    } else {
-      return 'invalid mobile number or email';
-        }
-  }
-
-  function validatepassword(value)
-  {
+  const { validateName, validateNumOrEmail, validateuserName, validatepassword, handleSubmit } = SignupFunctions(); // Destructure the functions from SignupFunctions
   
-   if(!value || value.length <8)
-     {return 'password should be 8 letters or more';}
-    else
-   { return undefined ;}
-  }
-  function validateuserName(value) {
-    if (!value) {
-      return 'Name is required';
-    }
-  
-    const isNameOccupied = sampleName.includes(value);
-  
-    if (isNameOccupied) {
-      return 'Name occupied';
-    }
-  
-    return undefined;
-  }
-  
-  function validateName(value){
-    if(value)
-    return undefined;
-    else 
-    return 'error';
-
-  }
-  const handleSubmit = async (values, actions) => {
-    try {
-      const docRef = await addDoc(collection(db, "users"), {
-        fullName: values.fullName,
-        numoremail: values.numoremail,
-        userName: values.userName,
-        password: values.password,
-      });
-      console.log("Document written with ID: ", docRef.id);
-
-      // Additional logic or redirect after successful submission
-
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
     return (
       <div className="container">
         <div className="form-container">

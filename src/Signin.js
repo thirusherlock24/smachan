@@ -1,127 +1,163 @@
-import './Signup.css';
-import { collection, addDoc,getDocs, getFirestore } from "firebase/firestore"; 
-import React, { useEffect,useState } from 'react';
-import { Field, Form, Formik } from 'formik';
-import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText, Button } from '@chakra-ui/react';
-import { app, db } from './Firebase'; // Adjust the path accordingly
-import { Link, Route, Routes} from 'react-router-dom';
-import Feeds from './Feeds';
+import './Post.css';
+import React, { useState, useEffect } from 'react';
+import { db } from './Firebase'; // Adjust the path accordingly
+import { collection, addDoc, getDocs, Timestamp, query, where } from "firebase/firestore"; // Import Timestamp and query from Firestore
+import { Formik, Form, Field } from 'formik';
+import {
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 
+function Post({ name }) {
+  const [posts, setPosts] = useState([]);
+  const [currentUser, setCurrentUser] = useState('');
+  const [comments, setComments] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
 
-// Initialize Cloud Firestore and get a reference to the service
+  useEffect(() => {
+    setCurrentUser(name);
+  }, [name]);
 
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "posts"));
+        const postsArray = [];
 
-function Signin() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+        querySnapshot.forEach((doc) => {
+          const post = {
+            id: doc.id,
+            user: doc.data().user.username,
+            title: doc.data().title,
+            content: doc.data().content,
+            timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null // Convert the timestamp to a JavaScript Date object if it exists
+          };
+          postsArray.push(post);
+        });
 
-  function validatepassword(value)
-  {
-  
-   if(!value || value.length <8)
-     {return 'password should be 8 letters or more';}
-    else
-   { return undefined ;}
-  }
-  const handleSignup = () => {
-    // Your logic for handling signup
-    console.log('Signup button clicked!');
-  };
-  function validateuserName(value) {
-    if (!value) {
-      return 'Name is required';
-    }
-    return undefined;
-  }
-  
-  
-  const handleSubmit = async (values, actions) => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      let userFound = false;
-  
-      querySnapshot.forEach((doc) => {
-        if (doc.data().userName === values.userName && doc.data().password === values.password) {
-          userFound = true;
-        }
-      });
-  
-      if (userFound) {
-        // Perform actions upon successful authentication, e.g., redirect
-        console.log('Authentication successful');
-        setIsAuthenticated(true);
-      } else {
-        // Handle authentication failure, e.g., show an error message
-        console.log('Authentication failed');
+        setPosts(postsArray);
+      } catch (error) {
+        console.error("Error getting documents: ", error);
       }
-    } catch (e) {
-      console.error("Error retrieving documents: ", e);
+    }
+
+    fetchPosts();
+  }, []);
+
+  const handleSubmitComment = async (values, postId) => {
+    // Handle empty comment handling
+    if (!values.comment.trim()) {
+      return alert('Please enter a comment');
+    }
+
+    // Create a new comment object with `post.id`, user data (if applicable), and content
+    const comment = {
+      postId: postId,
+      userId: currentUser, // Store user ID if authenticated
+      content: values.comment,
+      timestamp: Timestamp.now(),
+    };
+
+    // Add the comment to the `comments` collection
+    await addDoc(collection(db, "comments"), comment);
+  };
+
+  const handleShowComments = async (postId) => {
+    try {
+      const q = query(collection(db, 'comments'), where('postId', '==', postId));
+      const querySnapshot = await getDocs(q);
+      const commentsForPost = [];
+
+      querySnapshot.forEach((doc) => {
+        commentsForPost.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+
+      setComments(prevState => ({
+        ...prevState,
+        [postId]: commentsForPost
+      }));
+      setSelectedPostId(postId);
+      setShowModal(true); // Open modal to display comments
+    } catch (error) {
+      console.error("Error getting comments for post: ", error);
     }
   };
-  
-    return (
-        <div>
-            {(!isAuthenticated)&&(
-        <div className="container">
-        <div className="form-container">
-          <img src="/logo.png" alt="SM" className = "logo"/>
-      <Formik
-     initialValues={{userName: '', password: '' }}
-      onSubmit={handleSubmit}
-    >{(props) => (
 
-      <Form>
-
-      <Field name='userName' validate={validateuserName} >
-            {({ field, form }) => (
-              <FormControl isInvalid={form.errors.userName && form.values.userName}>
-              <FormLabel>
-                userName {!form.errors.userName && form.touched.userName ? '' : '*'}
-                </FormLabel>
-              <Input {...field} placeholder='userName' />
-             
-              <FormErrorMessage>{form.errors.userName}</FormErrorMessage>
-            </FormControl>
+  return (
+    <div className="post-container">
+      {posts.map(post => (
+        <div key={post.id} className="post">
+          <h2 className="heading">{post.title}</h2>
+          {post.timestamp && (
+            <div className="date">
+              <span>{formatDate(post.timestamp)}</span>
+            </div>
           )}
-        </Field>
-
-        
-      <Field name='password' type='password' validate={validatepassword} >
-            {({ field, form }) => (
-              <FormControl isInvalid={form.errors.password && form.values.password} >
-              <FormLabel>
-                password {!form.errors.password && form.touched.password ? '' : '*'}
-                </FormLabel>
-              <Input {...field} placeholder='password' />
-              <FormErrorMessage>{form.errors.password}</FormErrorMessage>
-            </FormControl>
-          )}
-        </Field>
-
-        <Button
-            className="button"
-            mt={4}
-            colorScheme='teal'
-            isLoading={props.isSubmitting}
-            type='submit'
-          >
-            Submit
-          </Button>
-          </Form>
-      )}
-    </Formik>
-    <div className="switch">
-    <p>Don't have account?</p>
-                <Link to='/Signup'>
-                 Signup
-                </Link>
+          <div className="name">
+            <span>by {post.user}</span>
+          </div>
+          <p>{post.content}</p>
+          <Button mt={4} colorScheme="blue" onClick={() => handleShowComments(post.id)}>Show Comments</Button>
         </div>
+      ))}
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Comments</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {comments[selectedPostId] && comments[selectedPostId].map(comment => (
+              <div key={comment.id}>
+                <p>{comment.content}</p>
+                <p>by {comment.userId.name}</p>
+                <p>{formatDate(comment.timestamp)}</p>
+              </div>
+            ))}
+            <Formik
+              initialValues={{ comment: '' }}
+              onSubmit={(values, { resetForm }) => {
+                handleSubmitComment(values, selectedPostId);
+                resetForm();
+              }}
+            >
+              <Form>
+                <Field
+                  as="textarea"
+                  name="comment"
+                  placeholder="Add your comment..."
+                />
+                <Button mt={4} colorScheme="blue" type="submit">
+                  Add Comment
+                </Button>
+              </Form>
+            </Formik>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={() => setShowModal(false)}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
-    </div>
-    )}
-     {isAuthenticated && <Feeds />}
-    </div>
-    );
-  
+  );
 }
 
-export default Signin;
+function formatDate(date) {
+  if (!date || !(date instanceof Date)) {
+    return ''; // Return empty string or handle the case as needed
+  }
+  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+export default Post;
