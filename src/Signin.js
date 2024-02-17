@@ -1,163 +1,136 @@
-import './Post.css';
-import React, { useState, useEffect } from 'react';
+import './Signup.css';
+import { collection,getDocs } from "firebase/firestore"; 
+import React, { useState } from 'react';
+import { Field, Form, Formik } from 'formik';
+import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText } from '@chakra-ui/react';
 import { db } from './Firebase'; // Adjust the path accordingly
-import { collection, addDoc, getDocs, Timestamp, query, where } from "firebase/firestore"; // Import Timestamp and query from Firestore
-import { Formik, Form, Field } from 'formik';
+import { Link} from 'react-router-dom';
+import Feeds from './Feeds';
+import CustomModal from './ModalSignin.js';
 import {
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Button
 } from "@chakra-ui/react";
 
-function Post({ name }) {
-  const [posts, setPosts] = useState([]);
-  const [currentUser, setCurrentUser] = useState('');
-  const [comments, setComments] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState(null);
+  // Use setUsernameValue to set the username where needed
 
-  useEffect(() => {
-    setCurrentUser(name);
-  }, [name]);
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "posts"));
-        const postsArray = [];
 
-        querySnapshot.forEach((doc) => {
-          const post = {
-            id: doc.id,
-            user: doc.data().user.username,
-            title: doc.data().title,
-            content: doc.data().content,
-            timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null // Convert the timestamp to a JavaScript Date object if it exists
-          };
-          postsArray.push(post);
-        });
 
-        setPosts(postsArray);
-      } catch (error) {
-        console.error("Error getting documents: ", error);
-      }
-    }
+function Signin() {
+  
 
-    fetchPosts();
-  }, []);
-
-  const handleSubmitComment = async (values, postId) => {
-    // Handle empty comment handling
-    if (!values.comment.trim()) {
-      return alert('Please enter a comment');
-    }
-
-    // Create a new comment object with `post.id`, user data (if applicable), and content
-    const comment = {
-      postId: postId,
-      userId: currentUser, // Store user ID if authenticated
-      content: values.comment,
-      timestamp: Timestamp.now(),
-    };
-
-    // Add the comment to the `comments` collection
-    await addDoc(collection(db, "comments"), comment);
-  };
-
-  const handleShowComments = async (postId) => {
-    try {
-      const q = query(collection(db, 'comments'), where('postId', '==', postId));
-      const querySnapshot = await getDocs(q);
-      const commentsForPost = [];
-
-      querySnapshot.forEach((doc) => {
-        commentsForPost.push({
-          id: doc.id,
-          ...doc.data()
-        });
-      });
-
-      setComments(prevState => ({
-        ...prevState,
-        [postId]: commentsForPost
-      }));
-      setSelectedPostId(postId);
-      setShowModal(true); // Open modal to display comments
-    } catch (error) {
-      console.error("Error getting comments for post: ", error);
-    }
-  };
-
-  return (
-    <div className="post-container">
-      {posts.map(post => (
-        <div key={post.id} className="post">
-          <h2 className="heading">{post.title}</h2>
-          {post.timestamp && (
-            <div className="date">
-              <span>{formatDate(post.timestamp)}</span>
-            </div>
-          )}
-          <div className="name">
-            <span>by {post.user}</span>
-          </div>
-          <p>{post.content}</p>
-          <Button mt={4} colorScheme="blue" onClick={() => handleShowComments(post.id)}>Show Comments</Button>
-        </div>
-      ))}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Comments</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {comments[selectedPostId] && comments[selectedPostId].map(comment => (
-              <div key={comment.id}>
-                <p>{comment.content}</p>
-                <p>by {comment.userId.name}</p>
-                <p>{formatDate(comment.timestamp)}</p>
-              </div>
-            ))}
-            <Formik
-              initialValues={{ comment: '' }}
-              onSubmit={(values, { resetForm }) => {
-                handleSubmitComment(values, selectedPostId);
-                resetForm();
-              }}
-            >
-              <Form>
-                <Field
-                  as="textarea"
-                  name="comment"
-                  placeholder="Add your comment..."
-                />
-                <Button mt={4} colorScheme="blue" type="submit">
-                  Add Comment
-                </Button>
-              </Form>
-            </Formik>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={() => setShowModal(false)}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </div>
-  );
-}
-
-function formatDate(date) {
-  if (!date || !(date instanceof Date)) {
-    return ''; // Return empty string or handle the case as needed
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [fname, setFname] = useState('');
+    const [showModal, setShowModal] = useState(false);
+  function validatepassword(value)
+  {
+  
+   if(!value || value.length <8)
+     {return 'password should be 8 letters or more';}
+    else
+   { return undefined ;}
   }
-  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  
+  function validateuserName(value) {
+    if (!value) {
+      return 'Name is required';
+    }
+    return undefined;
+  }
+  
+  
+  const handleSubmit = async (values, actions) => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      let userFound = false;
+  
+      querySnapshot.forEach((doc) => {
+        if (doc.data().userName === values.userName && doc.data().password === values.password) {
+          userFound = true;
+          setFname(values.userName);
+        }
+      });
+  
+      if (userFound) {
+        // Perform actions upon successful authentication, e.g., redirect
+        console.log('Authentication successful');
+        setIsAuthenticated(true);
+        setShowModal(true);
+      } else {
+        // Handle authentication failure, e.g., show an error message
+        console.log('Authentication failed');
+      }
+    } catch (e) {
+      console.error("Error retrieving documents: ", e);
+    }
+  };
+  
+    return (
+        <div>
+            {(!isAuthenticated)&&(
+        <div className="container">
+        <div className="form-container">
+          <img src="/logo.png" alt="SM" className = "logo"/>
+      <Formik
+     initialValues={{userName: '', password: '' }}
+      onSubmit={handleSubmit}
+    >{(props) => (
+
+      <Form>
+
+      <Field name='userName' validate={validateuserName} >
+            {({ field, form }) => (
+              <FormControl isInvalid={form.errors.userName && form.values.userName}>
+              <FormLabel>
+                userName {!form.errors.userName && form.touched.userName ? '' : '*'}
+                </FormLabel>
+              <Input {...field} placeholder='userName' />
+             
+              <FormErrorMessage>{form.errors.userName}</FormErrorMessage>
+            </FormControl>
+          )}
+        </Field>
+
+        
+      <Field name='password' type='password' validate={validatepassword} >
+            {({ field, form }) => (
+              <FormControl isInvalid={form.errors.password && form.values.password} >
+              <FormLabel>
+                password {!form.errors.password && form.touched.password ? '' : '*'}
+                </FormLabel>
+              <Input {...field} placeholder='password' />
+              <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+            </FormControl>
+          )}
+        </Field>
+
+        <Button
+            className="button"
+            mt={4}
+            colorScheme='teal'
+            isLoading={props.isSubmitting}
+            type='submit'
+          >
+            Submit
+          </Button>
+          </Form>
+      )}
+    </Formik>
+    <div className="switch">
+    <p>Don't have account?</p>
+                <Link to='/Signup'>
+                 Signup
+                </Link>
+        </div>
+    </div>
+    </div>
+    )}
+      {isAuthenticated && <CustomModal isOpen={showModal} onClose={() => setShowModal(false)} fname={fname} />}
+
+     {isAuthenticated && !showModal && <Feeds userName={fname}/>}
+    </div>
+    );
+  
 }
 
-export default Post;
+export default Signin;

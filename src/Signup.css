@@ -31,3 +31,13 @@
   .switch p{
     margin-right:2%;
   }
+  .modal-heading {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .modal-list {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }

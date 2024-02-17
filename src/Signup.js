@@ -1,10 +1,8 @@
 import './Signup.css';
-import { collection, addDoc,getDocs, getFirestore } from "firebase/firestore"; 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Field, Form, Formik } from 'formik';
 import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText, Button } from '@chakra-ui/react';
-import { app, db } from './Firebase'; // Adjust the path accordingly
-import { Link, Route, Routes} from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import SignupFunctions from './SignupFunctions'; // Import the SignupFunctions component
 
 function Signup() {

@@ -6,23 +6,15 @@ import { db } from "./Firebase"; // Adjust the path accordingly
 import Post from './Post.js';
 import './Feeds.css'; // Import the CSS file
 
-function Feeds(username) {
+function Feeds({userName}) {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fname, setFname] = useState('');
-  useEffect(() => {
-    console.log(username);
-    setFname(username);
-      // Rest of the component...
-    
-    
-  }, [username]);
   const handleSubmit = async (values, actions) => {
     try {
       setIsSubmitting(true);
       const timestamp = Timestamp.fromDate(new Date());
       await addDoc(collection(db, "posts"), {
-        user:fname,
+        user:userName,
         title: values.title,
         content: values.content,
         timestamp: timestamp,
@@ -97,7 +89,7 @@ function Feeds(username) {
       <div>
       {!isFormVisible && (
         <>
-        {<Post name={username.username}/>} 
+        {<Post userName={userName}/>} 
         </>)}
       </div>
     </div>

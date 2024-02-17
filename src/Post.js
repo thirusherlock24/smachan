@@ -1,139 +1,167 @@
 import './Post.css';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from './Firebase'; // Adjust the path accordingly
-import { collection, addDoc, getDocs, Timestamp, query, where } from "firebase/firestore"; // Import Timestamp and query from Firestore
+import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore"; // Import Timestamp, query, and onSnapshot from Firestore
+import {
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 import { Formik, Form, Field } from 'formik';
 
-function Post({ name }) {
-    const [posts, setPosts] = useState([]);
-    const [currentUser, setCurrentUser] = useState('');
-    const [comments, setComments] = useState({});
-    const [showCommentsForPost, setShowCommentsForPost] = useState(null);
+function Post({ userName }) {
+  const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
 
-    useEffect(() => {
-        setCurrentUser(name);
-    }, [name]);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const postsSnapshot = await getDocs(collection(db, "posts"));
+        const postsArray = [];
+        postsSnapshot.forEach((doc) => {
+          const post = {
+            id: doc.id,
+            user: doc.data().user,
+            title: doc.data().title,
+            content: doc.data().content,
+            timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null
+          };
+          postsArray.push(post);
+        });
+        setPosts(postsArray);
 
-    useEffect(() => {
-        async function fetchPosts() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "posts"));
-                const postsArray = [];
-
-                querySnapshot.forEach((doc) => {
-                    const post = {
-                        id: doc.id,
-                        user: doc.data().user.username,
-                        title: doc.data().title,
-                        content: doc.data().content,
-                        timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null // Convert the timestamp to a JavaScript Date object if it exists
-                    };
-                    postsArray.push(post);
-                });
-
-                setPosts(postsArray);
-            } catch (error) {
-                console.error("Error getting documents: ", error);
-            }
-        }
-
-        fetchPosts();
-    }, []);
-
-    const handleSubmitComment = async (values, postId) => {
-        // Handle empty comment handling
-        if (!values.comment.trim()) {
-            return alert('Please enter a comment');
-        }
-
-        // Create a new comment object with `post.id`, user data (if applicable), and content
-        const comment = {
-            postId: postId,
-            userId: currentUser, // Store user ID if authenticated
-            content: values.comment,
-            timestamp: Timestamp.now(),
-        };
-
-        // Add the comment to the `comments` collection
-        await addDoc(collection(db, "comments"), comment);
-    };
-
-    const handleShowComments = async (postId) => {
-        try {
-            const q = query(collection(db, 'comments'), where('postId', '==', postId));
-            const querySnapshot = await getDocs(q);
+        // Set up real-time listener for comments
+        postsSnapshot.forEach(doc => {
+          const postId = doc.id;
+          const q = query(collection(db, 'comments'), where('postId', '==', postId));
+          const unsubscribe = onSnapshot(q, (snapshot) => {
             const commentsForPost = [];
-
-            querySnapshot.forEach((doc) => {
-                commentsForPost.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+            snapshot.forEach((doc) => {
+              commentsForPost.push({
+                id: doc.id,
+                ...doc.data()
+              });
             });
-
             setComments(prevState => ({
-                ...prevState,
-                [postId]: commentsForPost
+              ...prevState,
+              [postId]: commentsForPost
             }));
-            setShowCommentsForPost(postId);
-        } catch (error) {
-            console.error("Error getting comments for post: ", error);
-        }
-    };
+          });
+        });
+      } catch (error) {
+        console.error("Error getting documents: ", error);
+      }
+    }
 
-    return (
-        <div className="post-container">
-            {posts.map(post => (
-                <div key={post.id} className="post">
-                    <h2 className="heading">{post.title}</h2>
-                    {post.timestamp && (
-                        <div className="date">
-                            <span>{formatDate(post.timestamp)}</span>
-                        </div>
-                    )}
-                    <div className="name">
-                        <span>by {post.user}</span>
-                    </div>
-                    <p>{post.content}</p>
-                    <button onClick={() => handleShowComments(post.id)}>Show Comments</button>
-                    {showCommentsForPost === post.id && comments[post.id] && (
-                        <div>
-                            <h3>Comments:</h3>
-                            {comments[post.id].map(comment => (
-                                <div key={comment.id}>
-                                    <p>{comment.content}</p>
-                                    <p>by {comment.userId.name}</p>
-                                    <p>{formatDate(comment.timestamp)}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    <Formik
-                        initialValues={{ comment: '' }}
-                        onSubmit={(values, { resetForm }) => {
-                            handleSubmitComment(values, post.id);
-                            resetForm();
-                        }}
-                    >
-                        <Form>
-                            <Field
-                                as="textarea"
-                                name="comment"
-                                placeholder="Add your comment..."
-                            />
-                            <button type="submit">Submit</button>
-                        </Form>
-                    </Formik>
-                </div>
-            ))}
+    fetchData();
+  }, []);
+
+  const handleSubmitComment = async (values, postId) => {
+    if (!values.comment.trim()) {
+      return alert('Please enter a comment');
+    }
+
+    const comment = {
+      user: userName,
+      postId: postId,
+      content: values.comment,
+      timestamp: Timestamp.now(),
+    };
+    try {
+      await addDoc(collection(db, "comments"), comment);
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+      alert('Failed to add comment. Please try again later.');
+    }
+  };
+
+  const handleShowComments = (postId) => {
+    setSelectedPostId(postId);
+    setShowModal(true);
+  };
+
+  return (
+    <div className="post-container">
+      {posts.map(post => (
+        <div key={post.id} className="post">
+          <h2 className="heading">{post.title}</h2>
+          {post.timestamp && (
+            <div className="date">
+              <span>{formatDate(post.timestamp)}</span>
+              <span></span>
+            </div>
+          )}
+          <div className="name">
+            <span>by {post.user}</span>
+          </div>
+          <p>{post.content}</p>
+          <Button mt={2} colorScheme="blue" onClick={() => handleShowComments(post.id)}>Comments</Button>
+          <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Comments</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody style={{ display: 'flex', flexDirection: 'column' }}>
+  <div style={{ marginBottom: '40px' }}>
+    {comments[selectedPostId] && comments[selectedPostId]
+      .sort((a, b) => a.timestamp - b.timestamp) // Sort comments by timestamp in ascending order
+      .map(comment => (
+        <div key={comment.id}>
+          <p><strong>{comment.user}:</strong> {comment.content}</p>
         </div>
-    );
+      ))}
+  </div>
+
+  <div style={{ display: 'flex', marginTop: 'auto' }}>
+    <Formik
+      initialValues={{ comment: '' }}
+      onSubmit={(values, { resetForm }) => {
+        handleSubmitComment(values, selectedPostId);
+        resetForm();
+      }}
+    >
+      <Form style={{ padding: '10px', display: 'flex', width: '90%' }}>
+        <Field
+          as="textarea"
+          name="comment"
+          placeholder="comment..."
+          style={{ flexGrow: 1, marginRight: '10px' }}
+        />
+        <Button colorScheme="blue" type="submit">
+          Add
+        </Button>
+      </Form>
+    </Formik>
+  </div>
+
+ 
+</ModalBody>
+
+              <ModalFooter style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button colorScheme="blue" mr={3} onClick={() => setShowModal(false)}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function formatDate(date) {
   if (!date || !(date instanceof Date)) {
-      return ''; // Return empty string or handle the case as needed
+    return '';
   }
   return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
+
 export default Post;

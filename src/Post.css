@@ -20,6 +20,7 @@
 .post h2 {
     font-size: 1.5rem;
     margin-bottom: 10px;
+    align-items: center;
 }
 
 .post p {
@@ -28,6 +29,7 @@
 }
 .heading {
     position: relative;
+    align-items:center;
   }
   
   .post {
