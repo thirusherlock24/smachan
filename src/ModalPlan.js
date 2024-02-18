@@ -1,4 +1,6 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
+import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText } from '@chakra-ui/react';
+
 import {
   Button,
   Modal,
@@ -10,10 +12,34 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { getDocs, collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
 
 function ModalPlan({isOpen, onClose, fname }) {
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+          try {
+            const postsSnapshot = await getDocs(collection(db, "planName"));
+            const postsArray = [];
+            postsSnapshot.forEach((doc) => {
+              const post = {
+                id: doc.id,
+                planName:doc.data().planName,
+                timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null
+              };
+              postsArray.push(post);
+            });
+            setPosts(postsArray);
+        } catch (error) {
+            console.error("Error getting documents: ", error);
+          }
+        }
+    
+        fetchData();
+      }, []);
+    
     const handleSubmit = async (values) => {
         if (!values.planName || typeof values.planName !== 'string' || !values.planName.trim()) {
             return alert('Name something');
@@ -25,7 +51,7 @@ function ModalPlan({isOpen, onClose, fname }) {
           timestamp: Timestamp.now(),
         };
         try {
-          await addDoc(collection(db, "PlanName"), comment);
+          await addDoc(collection(db, "planName"), comment);
         } catch (error) {
           console.error("Error adding comment: ", error);
           alert('Failed to add comment. Please try again later.');
@@ -39,6 +65,13 @@ function ModalPlan({isOpen, onClose, fname }) {
         <ModalCloseButton />
         <ModalBody>
           <>
+          <div className="plan-container">
+      {posts.map(post => (
+        <div key={post.id} className="plan">
+          <h2 className="heading">{post.planName}</h2>
+          </div>
+      ))}
+      </div>
           <Formik
       initialValues={{ planName: '' }}
       onSubmit={(values, { resetForm }) => {
@@ -47,12 +80,13 @@ function ModalPlan({isOpen, onClose, fname }) {
       }}
     >
       <Form style={{ padding: '10px', display: 'flex', width: '90%' }}>
-        <Field
-          as="input"
-          name="planName"
-          placeholder="Add a plan..."
-          style={{ flexGrow: 1, marginRight: '10px' }}
-        />
+      <Field name='planName' >
+            {({ field, form }) => (
+              <FormControl >
+              <Input {...field} placeholder='Add a plan' />
+            </FormControl>
+          )}
+        </Field>
         <Button colorScheme="blue" type="submit">
           Povoma
         </Button>
