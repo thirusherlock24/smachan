@@ -1,6 +1,5 @@
 import React,{useState,useEffect} from 'react';
 import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText } from '@chakra-ui/react';
-
 import {
   Button,
   Modal,
@@ -14,10 +13,14 @@ import {
 import { Formik, Form, Field } from "formik";
 import { getDocs, collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
+import Message from './Message'; // assuming Message.js is in the same directory
+import { Link } from 'react-router-dom';
 
 function ModalPlan({isOpen, onClose, fname }) {
     const [posts, setPosts] = useState([]);
+    const [selectedPost, setSelectedPost] = useState(null);
 
+   
     useEffect(() => {
         async function fetchData() {
           try {
@@ -40,6 +43,8 @@ function ModalPlan({isOpen, onClose, fname }) {
         fetchData();
       }, []);
     
+      
+  
     const handleSubmit = async (values) => {
         if (!values.planName || typeof values.planName !== 'string' || !values.planName.trim()) {
             return alert('Name something');
@@ -68,8 +73,9 @@ function ModalPlan({isOpen, onClose, fname }) {
           <div className="plan-container">
       {posts.map(post => (
         <div key={post.id} className="plan">
-          <h2 className="heading">{post.planName}</h2>
-          </div>
+  <h2 className="heading">
+            <Link to={`/message/${post.id}/${post.planName}`}>{post.planName}</Link>
+          </h2>          </div>
       ))}
       </div>
           <Formik

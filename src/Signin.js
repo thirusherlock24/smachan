@@ -15,9 +15,8 @@ import {
 
 
 
-
 function Signin() {
-  
+
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [fname, setFname] = useState('');
@@ -56,6 +55,7 @@ function Signin() {
         console.log('Authentication successful');
         setIsAuthenticated(true);
         setShowModal(true);
+
       } else {
         // Handle authentication failure, e.g., show an error message
         console.log('Authentication failed');
