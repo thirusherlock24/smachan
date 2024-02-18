@@ -5,10 +5,15 @@ import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
 import Post from './Post.js';
 import './Feeds.css'; // Import the CSS file
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
 
 function Feeds({userName}) {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showText, setShowText] = useState(false);
+  const [plan,setPlan]=useState('');
   const handleSubmit = async (values, actions) => {
     try {
       setIsSubmitting(true);
@@ -42,15 +47,57 @@ function Feeds({userName}) {
     }
     return undefined;
   };
+   const planatrip = (plan) => {
+    if(plan.toLowerCase()==="plan a trip")
+    {
+      return(alert('fine'));
+    }
+    return(alert('not fine'));
+   }
 
   return (
     <div className="form">
+      
+       <div >
        {!isFormVisible && 
-      <div className="feed-item">
-       
-          <input type="text" placeholder="What's on your mind" onClick={() => setIsFormVisible(true)} />
-        
-      </div>}
+         <div className="All-icons">
+           <div className="feed-item">
+             <input 
+               type="text" 
+               placeholder="What's on your mind" 
+               onClick={() => setIsFormVisible(true)} 
+             />
+           </div>
+           <div className="button-group">
+             <div className="button-contain">
+               <FontAwesomeIcon 
+                 icon={faPlus} 
+                 onMouseEnter={() => setShowText(true)} 
+                 onMouseLeave={() => setShowText(false)} 
+                 style={{ cursor: 'pointer' }} 
+               />
+               {showText && (
+                 <div className="tooltip">
+                   Add Photos and Videos
+                 </div>
+               )}
+             </div>
+             <div className="button-container">
+               <input 
+                 type="text" 
+                 value={plan} 
+                 placeholder="Type: plan a trip" 
+                 onChange={(e) => setPlan(e.target.value)}
+               />
+               <button className="submit-plan" onClick={() => planatrip(plan)}>
+                 Submit
+               </button>
+             </div>
+           </div>
+         </div>
+       }
+     </div>
+     
       {isFormVisible && (
         <div className="form-container">
           <h2>Create a New Post</h2>

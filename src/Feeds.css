@@ -6,7 +6,56 @@
   width:90%;
   border: 1px solid #ccc;
   border-radius: 6px;
+
 }
+.All-icons {
+  display:flex;
+  margin-left:10%;
+}
+
+.feed-item{
+  margin:5px;
+  padding:5px;
+  width:30%;
+  border: 3px solid #9a15c3;
+  border-radius: 6px;
+  margin-right:20%;
+  justify-content: center;
+  align-items:center;
+}
+.button-contain {
+  
+  align-items: center;
+
+}
+
+.button-container {
+  position: fixed;
+  top: 20px; /* Adjust the top position */
+  right: 10%; /* Adjust the right position */
+  display: flex;
+  align-items: center;
+}
+
+.tooltip {
+
+}
+
+
+
+.submit-plan {
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-plan:hover {
+  background-color: #0056b3;
+}
+
 .form-container {
     max-width: 600px;
     margin: 0 auto;
@@ -68,24 +117,6 @@
     cursor: not-allowed;
   }
 
-  .feed-item{
-    margin:5px;
-    padding:5px;
-    width:20%;
-    border: 3px solid #9a15c3;
-    border-radius: 6px;
-    display:flex;
-    justify-content: center;
-    align-items:center;
-  }
-  .modal-heading {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-  
-  .modal-list {
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
-  }
+ 
+
   
