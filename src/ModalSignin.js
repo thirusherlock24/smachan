@@ -9,15 +9,16 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useContext } from 'react';
+import { useContext ,useEffect} from 'react';
 import UsernameContext from './UsernameContext.js';
 
 
 
 function ModalSignin({ isOpen, onClose, fname }) {
+  useEffect(() => {
   const { setUsername } = useContext(UsernameContext);
  setUsername(fname);
-  console.log(fname);
+  },[]);
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />

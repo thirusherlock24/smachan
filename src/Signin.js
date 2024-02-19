@@ -1,12 +1,15 @@
 import './Signup.css';
 import { collection,getDocs } from "firebase/firestore"; 
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText } from '@chakra-ui/react';
 import { db } from './Firebase'; // Adjust the path accordingly
 import { Link} from 'react-router-dom';
 import Feeds from './Feeds';
 import CustomModal from './ModalSignin.js';
+import UsernameContext from './UsernameContext.js';
+import { useEffect } from 'react';
+
 import {
   Button
 } from "@chakra-ui/react";
@@ -16,11 +19,19 @@ import {
 
 
 function Signin() {
-
-
+    const { username } = useContext(UsernameContext);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [fname, setFname] = useState('');
     const [showModal, setShowModal] = useState(false);
+  
+    useEffect(() => {
+      if (username) {
+        setFname(username);
+        setIsAuthenticated(true);
+        setShowModal(false);
+      }
+    }, [username]);
+  
   function validatepassword(value)
   {
   
@@ -69,7 +80,7 @@ function Signin() {
         <div>
             {(!isAuthenticated)&&(
         <div className="container">
-        <div className="form-container">
+        <div className="form-containers">
           <img src="/logo.png" alt="SM" className = "logo"/>
       <Formik
      initialValues={{userName: '', password: '' }}
@@ -128,6 +139,7 @@ function Signin() {
       {isAuthenticated && <CustomModal isOpen={showModal} onClose={() => setShowModal(false)} fname={fname} />}
 
      {isAuthenticated && !showModal && <Feeds userName={fname}/>}
+
     </div>
     );
   

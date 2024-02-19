@@ -1,0 +1,27 @@
+.message-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Use height instead of min-height to ensure the container takes up the full height of the viewport */
+  }
+  
+  .comments-container {
+    flex: 1; /* Allow the comments container to take up remaining vertical space */
+    overflow-y: auto; /* Enable vertical scrolling if comments overflow */
+    padding: 20px; /* Add padding to create space between the comments and the edges */
+  }
+  
+  .input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px; /* Adjust padding as needed */
+    background-color: #fff;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-container {
+    display: flex;
+    align-items: center;
+  }
+  
