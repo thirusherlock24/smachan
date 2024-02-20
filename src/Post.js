@@ -34,7 +34,8 @@ function Post({ userName }) {
             user: doc.data().user,
             title: doc.data().title,
             content: doc.data().content,
-            timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null
+            timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null,
+            plan:doc.data().plan
           };
           postsArray.push(post);
         });
@@ -102,7 +103,8 @@ function Post({ userName }) {
             </div>
           )}
           <div className="name">
-            <span>by {post.user}</span>
+            <span>{post.user}</span>
+            {post.plan && <span>--plan: {`{${post.plan}}`}</span>}
           </div>
           <p>{post.content}</p>
           <Button mt={2} colorScheme="blue" onClick={() => handleShowComments(post.id)}>Comments</Button>

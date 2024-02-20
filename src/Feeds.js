@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field } from "formik";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp,getDocs } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
 import Post from './Post.js';
 import ModalPlan from './ModalPlan.js'; // Import the ModalPlan component
 import './Feeds.css'; // Import the CSS file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import {
+import {Select,
   FormControl,
   FormLabel,
   FormErrorMessage,
@@ -30,7 +30,31 @@ function Feeds({ userName }) {
   const [plan, setPlan] = useState('');
   const [modalPlanVar,setModalPlanVar]= useState(false)
   const [showModal, setShowModal] = useState(false);
+  const [selectedPlan,setSelectedPlan]=useState('');
+  const[posts,setPosts]=useState([]);
  console.log(userName);
+ 
+ useEffect(() => {
+  async function fetchData() {
+    try {
+      const postsSnapshot = await getDocs(collection(db, "planName"));
+      const postsArray = [];
+      postsSnapshot.forEach((doc) => {
+        const post = {
+          id: doc.id,
+          planName: doc.data().planName,
+          timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null
+        };
+        postsArray.push(post);
+      });
+      setPosts(postsArray);
+    } catch (error) {
+      console.error("Error getting documents: ", error);
+    }
+  }
+
+  fetchData();
+}, []);
   const handleSubmit = async (values, actions) => {
     try {
       setIsSubmitting(true);
@@ -40,6 +64,7 @@ function Feeds({ userName }) {
         title: values.title,
         content: values.content,
         timestamp: timestamp,
+        plan:selectedPlan
       });
       console.log("Post submitted successfully!");
       setIsSubmitting(false);
@@ -146,6 +171,12 @@ function Feeds({ userName }) {
                       </FormControl>
                     )}
                   </Field>
+                  <Select placeholder="Select a plan" onChange={(e) => setSelectedPlan(e.target.value)}>
+            {posts.map(post => (
+              <option key={post.id} value={post.planName}>{post.planName}</option>
+            ))}
+          </Select>
+
                   <ModalFooter>
                     <Button colorScheme="teal" mr={3} type="submit" isLoading={props.isSubmitting}>
                       Submit
