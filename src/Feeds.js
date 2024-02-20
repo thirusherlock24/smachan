@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field } from "formik";
-import { FormControl, FormLabel, FormErrorMessage, Input, Textarea, Button } from "@chakra-ui/react";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
 import Post from './Post.js';
@@ -8,6 +7,21 @@ import ModalPlan from './ModalPlan.js'; // Import the ModalPlan component
 import './Feeds.css'; // Import the CSS file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Textarea,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter
+} from '@chakra-ui/react';
 
 function Feeds({ userName }) {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -16,7 +30,7 @@ function Feeds({ userName }) {
   const [plan, setPlan] = useState('');
   const [modalPlanVar,setModalPlanVar]= useState(false)
   const [showModal, setShowModal] = useState(false);
-
+ console.log(userName);
   const handleSubmit = async (values, actions) => {
     try {
       setIsSubmitting(true);
@@ -64,7 +78,7 @@ function Feeds({ userName }) {
     <div className="form">
       <div>
         {<ModalPlan isOpen={showModal} onClose={() => setShowModal(false)} fname={userName} />}
-        {!isFormVisible && (
+        {
           <div className="All-icons">
             <div className="feed-item">
               <input
@@ -100,44 +114,53 @@ function Feeds({ userName }) {
               </div>
             </div>
           </div>
-        )}
+        }
       </div>
 
-      {isFormVisible && (
-        <div className="form-container">
-          <h2>Create a New Post</h2>
-          <Formik initialValues={{ title: "", content: "" }} onSubmit={handleSubmit}>
-            {(props) => (
-              <Form>
-                <Field name="title" validate={validateTitle}>
-                  {({ field, form }) => (
-                    <FormControl className="form-field" isInvalid={form.errors.title && form.touched.title}>
-                      <FormLabel className="form-label">Title</FormLabel>
-                      <Input className="form-input" {...field} placeholder="Enter title" />
-                      <FormErrorMessage className="error-message">{form.errors.title}</FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
-                <Field name="content" validate={validateContent}>
-                  {({ field, form }) => (
-                    <FormControl className="form-field" isInvalid={form.errors.content && form.touched.content}>
-                      <FormLabel className="form-label">Content</FormLabel>
-                      <Textarea className="form-textarea" {...field} placeholder="Enter content" />
-                      <FormErrorMessage className="error-message">{form.errors.content}</FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
-                <Button className="submit-button" mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
-                  Submit
-                </Button>
-                <Button mt={4} colorScheme="red" ml={2} onClick={() => setIsFormVisible(false)}>
-                  Cancel
-                </Button>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      )}
+      <>
+
+      <Modal isOpen={isFormVisible} onClose={() => setIsFormVisible(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create a New Post</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Formik initialValues={{ title: "", content: "" }} onSubmit={handleSubmit}>
+              {props => (
+                <Form>
+                  <Field name="title" validate={validateTitle}>
+                    {({ field, form }) => (
+                      <FormControl isInvalid={form.errors.title && form.touched.title}>
+                        <FormLabel>Title</FormLabel>
+                        <Input {...field} placeholder="Enter title" />
+                        <FormErrorMessage>{form.errors.title}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="content" validate={validateContent}>
+                    {({ field, form }) => (
+                      <FormControl isInvalid={form.errors.content && form.touched.content}>
+                        <FormLabel>Content</FormLabel>
+                        <Textarea {...field} placeholder="Enter content" />
+                        <FormErrorMessage>{form.errors.content}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <ModalFooter>
+                    <Button colorScheme="teal" mr={3} type="submit" isLoading={props.isSubmitting}>
+                      Submit
+                    </Button>
+                    <Button colorScheme="red" onClick={() => setIsFormVisible(false)}>
+                      Cancel
+                    </Button>
+                  </ModalFooter>
+                </Form>
+              )}
+            </Formik>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
       <div>
         {!isFormVisible && (
           <>
@@ -150,3 +173,4 @@ function Feeds({ userName }) {
 }
 
 export default Feeds;
+

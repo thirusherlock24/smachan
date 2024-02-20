@@ -15,10 +15,9 @@ import UsernameContext from './UsernameContext.js';
 
 
 function ModalSignin({ isOpen, onClose, fname }) {
-  useEffect(() => {
   const { setUsername } = useContext(UsernameContext);
- setUsername(fname);
-  },[]);
+  setUsername(fname);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />

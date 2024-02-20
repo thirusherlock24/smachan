@@ -21,6 +21,9 @@ function Post({ userName }) {
   const [selectedPostId, setSelectedPostId] = useState(null);
 
   useEffect(() => {
+    
+     
+  
     async function fetchData() {
       try {
         const postsSnapshot = await getDocs(collection(db, "posts"));

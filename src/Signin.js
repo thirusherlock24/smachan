@@ -9,6 +9,7 @@ import Feeds from './Feeds';
 import CustomModal from './ModalSignin.js';
 import UsernameContext from './UsernameContext.js';
 import { useEffect } from 'react';
+import {PlanNameContext} from './UsernameContext.js';
 
 import {
   Button
@@ -19,13 +20,16 @@ import {
 
 
 function Signin() {
-    const { username } = useContext(UsernameContext);
+    const { planName } = useContext(PlanNameContext);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [fname, setFname] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const {username} = useContext(UsernameContext);
+    const { setUsername } = useContext(UsernameContext);
+
   
     useEffect(() => {
-      if (username) {
+      if (planName) {
         setFname(username);
         setIsAuthenticated(true);
         setShowModal(false);
@@ -58,6 +62,8 @@ function Signin() {
         if (doc.data().userName === values.userName && doc.data().password === values.password) {
           userFound = true;
           setFname(values.userName);
+          setUsername(values.userName);
+
         }
       });
   

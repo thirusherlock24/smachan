@@ -7,45 +7,43 @@ import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText ,Button
 import { db } from './Firebase'; // Adjust the path accordingly
 import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore";
 import { Formik, Form, Field } from 'formik';
-import ModalPlan from './ModalPlan.js'; // Import the ModalPlan component
+import {PlanNameContext} from './UsernameContext.js';
 
 function Message ()  {
     const { username } = useContext(UsernameContext);
     const { postId, planName } = useParams();
     const [comments, setComments] = useState({});
     const messageEndRef = useRef(null);
-    const [showModal, setShowModal] = useState(false);
+    const { setPlanName } = useContext(PlanNameContext);
 
     useEffect(() => {
-
+      setPlanName(planName);
+    
       let unsubscribe;
       async function fetchData() {
         try {
           const postsArray = [];
-  
-        
-            const q = query(collection(db, 'Message'), where('planId', '==', postId));
-             unsubscribe = onSnapshot(q, (snapshot) => {
-              const commentsForPost = [];
-              snapshot.forEach((doc) => {
-                commentsForPost.push({
-                  id: doc.id,
-                  ...doc.data()
-                });
+          const q = query(collection(db, 'Message'), where('planId', '==', postId));
+          unsubscribe = onSnapshot(q, (snapshot) => {
+            const commentsForPost = [];
+            snapshot.forEach((doc) => {
+              commentsForPost.push({
+                id: doc.id,
+                ...doc.data()
               });
-              setComments(commentsForPost);
-              scrollToBottom();
             });
-          }
-         catch (error) {
+            setComments(commentsForPost);
+            scrollToBottom();
+          });
+        } catch (error) {
           console.error("Error getting documents: ", error);
         }
       }
-  
+    
       fetchData();
       return () => unsubscribe && unsubscribe();
-
-    }, [postId]);
+    }, [postId, planName]);
+    
     const scrollToBottom = () => {
       messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -73,7 +71,6 @@ function Message ()  {
       }
     };
     const handleGoBack = () => {
-        setShowModal(true);
        // Go back to the previous page
     };
   
@@ -115,7 +112,6 @@ function Message ()  {
           Go Back
         </Button>
         </div>
-        {<ModalPlan isOpen={showModal} onClose={() => setShowModal(false)} fname={username} />}
 
       </div>
     );

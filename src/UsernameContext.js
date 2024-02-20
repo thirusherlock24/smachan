@@ -25,3 +25,4 @@ export const PlanNameProvider = ({ children }) => {
   };
 
 export default UsernameContext;
+export { PlanNameContext };
