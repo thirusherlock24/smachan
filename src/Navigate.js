@@ -11,7 +11,7 @@ function Navigate()
     <Routes>
         <Route path="/Signup" element={<Signup />} />
         <Route path="/" element={<Signin />} />
-        <Route path="/message/:postId/:planName" element={<Message/>} />
+        <Route path="/message/:postId/:planName/:status" element={<Message/>} />
 
       </Routes>
     </div>

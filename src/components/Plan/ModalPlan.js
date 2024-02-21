@@ -15,6 +15,7 @@ import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from
 import { db } from "../../Firebase"; // Adjust the path accordingly
 import Message from './Message'; // assuming Message.js is in the same directory
 import { Link } from 'react-router-dom';
+import { green } from '@mui/material/colors';
 
 function ModalPlan({isOpen, onClose, userName }) {
     const [posts, setPosts] = useState([]);
@@ -36,7 +37,14 @@ function ModalPlan({isOpen, onClose, userName }) {
       return () => unsubscribe();
     }, []);
     
-    
+    const successPosts = posts.filter(post => post.success === 1);
+    const ongoingPosts = posts.filter(post => !post.success);
+  // Sorting successPosts by timestamp in descending order
+const sortsuccessPosts = successPosts.sort((a, b) => a.timestamp - b.timestamp);
+
+// Sorting ongoingPosts by timestamp in descending order
+const sortongoingPosts = ongoingPosts.sort((a, b) => a.timestamp - b.timestamp);
+
       
   
     const handleSubmit = async (values) => {
@@ -64,16 +72,37 @@ function ModalPlan({isOpen, onClose, userName }) {
         <ModalBody>
           <>
           <div className="plan-container">
-  {posts
-    .sort((a, b) => a.timestamp - b.timestamp) // Sort posts by timestamp in descending order
-    .map(post => (
-      <div key={post.id} className="plan">
-        <h2 className="heading">
-          <Link to={`/message/${post.id}/${post.planName}`}>{post.planName}</Link>
-        </h2>
+          {successPosts.length > 0 && (
+  <div className="plan-container">
+    <h2 className="heading" style={{ fontWeight: 'bold', marginBottom: '10px' }}>Success</h2>
+    <ul style={{ marginLeft: '20px', color:'brown' }}>
+      {sortsuccessPosts.map(post => (
+        <li key={post.id} className="plan">
+          <h3 className="plan-heading">
+            <Link to={`/message/${post.id}/${post.planName}/success`}>{post.planName}</Link>
+          </h3>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
       </div>
-    ))}
-</div>
+      <div className="plan-container" style={{ marginTop: '10px'}}>
+      {ongoingPosts.length > 0 && (
+  <div className="plan-container">
+    <h2 className="heading" style={{ fontWeight: 'bold', marginBottom: '10px' }}>Ongoing</h2>
+    <ul style={{ marginLeft: '20px' ,color:'green'}}>
+      {sortongoingPosts.map(post => (
+        <li key={post.id} className="plan">
+          <h3 className="plan-heading">
+            <Link to={`/message/${post.id}/${post.planName}/ongoing`}>{post.planName}</Link>
+          </h3>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+      </div>
 
 
 

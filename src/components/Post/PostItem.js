@@ -11,7 +11,7 @@ function PostItem({ post, userName }) {
   };
 
   return (
-    <div key={post.id} className="post">
+<div key={post.id} className="post">
       <h2 className="heading">{post.title}</h2>
       <div className="date">
         <span>{formatDate(post.timestamp)}</span>
@@ -21,7 +21,9 @@ function PostItem({ post, userName }) {
         {post.plan && <span>--plan: {`{${post.plan}}`}</span>}
       </div>
       <p>{post.content}</p>
-      <Button mt={2} colorScheme="blue" onClick={handleShowComments}>Comments</Button>
+      <Button mt={2} colorScheme="blue" onClick={handleShowComments}>Comments</Button> 
+  
+
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <ModalOverlay />
         <ModalContent>
@@ -37,6 +39,7 @@ function PostItem({ post, userName }) {
           </ModalFooter>
         </ModalContent>
       </Modal>
+    
     </div>
   );
 }

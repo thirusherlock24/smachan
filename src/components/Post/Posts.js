@@ -8,23 +8,25 @@ function Posts({ userName }) {
 
   useEffect(() => {
     async function fetchData() {
-        try {
-            const postsSnapshot = await getDocs(collection(db, "posts"));
-            const postsArray = [];
-            postsSnapshot.forEach((doc) => {
-              const post = {
-                id: doc.id,
-                user: doc.data().user,
-                title: doc.data().title,
-                content: doc.data().content,
-                timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null,
-                plan:doc.data().plan
-              };
-              postsArray.push(post);
-            });
-            setPosts(postsArray);
+      try {
+        const postsSnapshot = await getDocs(collection(db, "posts"));
+        const postsArray = [];
+        postsSnapshot.forEach((doc) => {
+          const post = {
+            id: doc.id,
+            user: doc.data().user,
+            title: doc.data().title,
+            content: doc.data().content,
+            timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null,
+            plan: doc.data().plan
+          };
+          postsArray.push(post);
+        });
+        // Sort postsArray by timestamp in descending order
+        postsArray.sort((a, b) => b.timestamp - a.timestamp);
+        setPosts(postsArray);
       } catch (error) {
-        console.error("Error getting documents: ", error);
+        console.error("Error fetching posts: ", error);
       }
     }
     fetchData();
