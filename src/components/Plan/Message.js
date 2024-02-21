@@ -1,13 +1,13 @@
 import React from 'react';
 import  { useContext,useState,useEffect, useRef} from 'react';
 import './Message.css';
-import UsernameContext from './UsernameContext.js';
-import { useParams } from 'react-router-dom';
+import UsernameContext from '../../UsernameContext.js';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FormControl, FormLabel, FormErrorMessage, Input, FormHelperText ,Button} from '@chakra-ui/react';
-import { db } from './Firebase'; // Adjust the path accordingly
+import { db } from '../../Firebase.js'; // Adjust the path accordingly
 import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore";
 import { Formik, Form, Field } from 'formik';
-import {PlanNameContext} from './UsernameContext.js';
+import {PlanNameContext} from '../../UsernameContext.js';
 
 function Message ()  {
     const { username } = useContext(UsernameContext);
@@ -15,6 +15,7 @@ function Message ()  {
     const [comments, setComments] = useState({});
     const messageEndRef = useRef(null);
     const { setPlanName } = useContext(PlanNameContext);
+    const navigate = useNavigate(); // Use useNavigate hook
 
     useEffect(() => {
       setPlanName(planName);
@@ -33,6 +34,7 @@ function Message ()  {
               });
             });
             setComments(commentsForPost);
+
             scrollToBottom();
           });
         } catch (error) {
@@ -71,7 +73,8 @@ function Message ()  {
       }
     };
     const handleGoBack = () => {
-       // Go back to the previous page
+      navigate('/');
+
     };
   
   return (
@@ -109,7 +112,7 @@ function Message ()  {
             </Form>
           </Formik>
           <Button onClick={handleGoBack} colorScheme="blue" mt={4}>
-          Go Back
+          Exit from plan
         </Button>
         </div>
 

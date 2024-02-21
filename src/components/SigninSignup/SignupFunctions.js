@@ -1,9 +1,11 @@
 import { collection, addDoc, getDocs } from "firebase/firestore"; 
 import { useEffect, useState } from 'react';
-import { db } from './Firebase'; // Adjust the path accordingly
+import { db } from '../../Firebase'; // Adjust the path accordingly
+import {  useNavigate } from 'react-router-dom';
 
 function SignupFunctions() {
   const [usernames, setUsernames] = useState([]);
+  const navigate = useNavigate(); // Use useNavigate hook
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +50,9 @@ function SignupFunctions() {
         password: values.password,
       });
       console.log("Document written with ID: ", docRef.id);
-      // Additional logic or redirect after successful submission
+      alert('signup successfully');
+      navigate('/');
+
     } catch (error) {
       console.error("Error adding document: ", error);
     }

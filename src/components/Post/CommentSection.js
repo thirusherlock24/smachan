@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@chakra-ui/react";
 import { Formik, Form, Field } from 'formik';
 import { addDoc, Timestamp, collection, onSnapshot } from "firebase/firestore";
-import { db } from './Firebase';
+import { db } from '../../Firebase';
 import './Post.css';
 
 function CommentSection({ postId, userName }) {

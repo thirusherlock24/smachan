@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
 import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore";
-import { db } from "./Firebase"; // Adjust the path accordingly
+import { db } from "../../Firebase"; // Adjust the path accordingly
 import Message from './Message'; // assuming Message.js is in the same directory
 import { Link } from 'react-router-dom';
 

@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
-import Posts from './Posts.js';
-import ModalPlan from './ModalPlan.js'; // Import the ModalPlan component
+import Posts from '../Post/Posts.js';
+import ModalPlan from '../Plan/ModalPlan.js'; // Import the ModalPlan component
 import './Feeds.css'; // Import the CSS file
 import FeedPost from './FeedPost.js';
 

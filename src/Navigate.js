@@ -1,8 +1,8 @@
 import React from "react";
-import Signup from './Signup';
+import Signup from './components/SigninSignup/Signup';
 import { Link, Route, Routes} from 'react-router-dom';
-import Signin from './Signin';
-import Message from './Message';
+import Signin from './components/SigninSignup/Signin';
+import Message from './components/Plan/Message';
 
 function Navigate()
 {return(

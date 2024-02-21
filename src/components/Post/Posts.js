@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db } from './Firebase';
+import { db } from '../../Firebase';
 import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore";
 import PostItem from './PostItem';
 import './Post.css';

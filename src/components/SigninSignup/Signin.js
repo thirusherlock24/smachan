@@ -1,13 +1,13 @@
 import './Signup.css';
 import { collection,getDocs } from "firebase/firestore"; 
 import React, { useState,useContext } from 'react';
-import { db } from './Firebase'; // Adjust the path accordingly
+import { db } from '../../Firebase.js'; // Adjust the path accordingly
 import { Link} from 'react-router-dom';
-import FeedTop from './FeedTop.js';
-import CustomModal from './ModalSignin.js';
-import UsernameContext from './UsernameContext.js';
+import FeedTop from '../Feeds/FeedTop.js';
+import CustomModal from '../../ModalSignin.js';
+import UsernameContext from '../../UsernameContext.js';
 import { useEffect } from 'react';
-import {PlanNameContext} from './UsernameContext.js';
+import {PlanNameContext} from '../../UsernameContext.js';
 import SigninForm from './SigninForm.js';
 
 

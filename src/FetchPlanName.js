@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection,  Timestamp,getDocs } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
-import './Feeds.css'; // Import the CSS file
 
 
 

@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field } from "formik";
 import { collection, addDoc, Timestamp,getDocs } from "firebase/firestore";
-import { db } from "./Firebase"; // Adjust the path accordingly
+import { db } from "../../Firebase.js"; // Adjust the path accordingly
 import './Feeds.css'; // Import the CSS file
-import FetchPlanName from './FetchPlanName.js';
+import FetchPlanName from '../../FetchPlanName.js';
 
 import {Select,
   FormControl,
