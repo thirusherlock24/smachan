@@ -10,7 +10,7 @@ function Signup() {
   
     return (
       <div className="container">
-        <div className="form-container">
+        <div className="form-containers">
           <img src="/logo.png" alt="SM" className = "logo"/>
       <Formik
      initialValues={{ fullName: '', numoremail: '', userName: '', password: '' }}

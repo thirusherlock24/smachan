@@ -3,7 +3,7 @@ import { collection,getDocs } from "firebase/firestore";
 import React, { useState,useContext } from 'react';
 import { db } from './Firebase'; // Adjust the path accordingly
 import { Link} from 'react-router-dom';
-import Feeds from './Feeds';
+import FeedTop from './FeedTop.js';
 import CustomModal from './ModalSignin.js';
 import UsernameContext from './UsernameContext.js';
 import { useEffect } from 'react';
@@ -75,7 +75,7 @@ function Signin() {
     )}
       {isAuthenticated && <CustomModal isOpen={showModal} onClose={() => setShowModal(false)} fname={fname} />}
 
-     {isAuthenticated && !showModal && <Feeds userName={fname}/>}
+     {isAuthenticated && !showModal && <FeedTop userName={fname}/>}
 
     </div>
     );
