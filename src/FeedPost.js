@@ -27,10 +27,11 @@ function FeedPost({isOpen,onClose,userName})
 {  const posts = FetchPlanName();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedPlan,setSelectedPlan]=useState('');
+    const timestamp = Timestamp.fromDate(new Date());
+
     const handleSubmit = async (values, actions) => {
         try {
           setIsSubmitting(true);
-          const timestamp = Timestamp.fromDate(new Date());
           await addDoc(collection(db, "posts"), {
             user: userName,
             title: values.title,

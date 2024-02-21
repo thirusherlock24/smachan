@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
-import Post from './Post.js';
+import Posts from './Posts.js';
 import ModalPlan from './ModalPlan.js'; // Import the ModalPlan component
 import './Feeds.css'; // Import the CSS file
 import FeedPost from './FeedPost.js';
@@ -65,7 +65,7 @@ return(
 </div>
 {!isFormVisible && (
           <>
-            {<Post userName={userName} />}
+            {<Posts userName={userName} />}
           </>
         )}
          <div>

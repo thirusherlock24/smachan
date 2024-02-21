@@ -11,37 +11,31 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { Formik, Form, Field } from "formik";
-import { getDocs, collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "./Firebase"; // Adjust the path accordingly
 import Message from './Message'; // assuming Message.js is in the same directory
 import { Link } from 'react-router-dom';
 
-function ModalPlan({isOpen, onClose, fname }) {
+function ModalPlan({isOpen, onClose, userName }) {
     const [posts, setPosts] = useState([]);
     const [selectedPost, setSelectedPost] = useState(null);
 
-   
+
     useEffect(() => {
-        async function fetchData() {
-          try {
-            const postsSnapshot = await getDocs(collection(db, "planName"));
-            const postsArray = [];
-            postsSnapshot.forEach((doc) => {
-              const post = {
-                id: doc.id,
-                planName:doc.data().planName,
-                timestamp: doc.data().timestamp instanceof Timestamp ? doc.data().timestamp.toDate() : null
-              };
-              postsArray.push(post);
-            });
-            setPosts(postsArray);
-        } catch (error) {
-            console.error("Error getting documents: ", error);
-          }
-        }
+      const unsubscribe = onSnapshot(query(collection(db, 'planName')), (snapshot) => {
+        const postsArray = [];
+        snapshot.forEach((doc) => {
+          postsArray.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        setPosts(postsArray);
+      });
     
-        fetchData();
-      }, []);
+      return () => unsubscribe();
+    }, []);
+    
     
       
   
@@ -49,9 +43,8 @@ function ModalPlan({isOpen, onClose, fname }) {
         if (!values.planName || typeof values.planName !== 'string' || !values.planName.trim()) {
             return alert('Name something');
         }
-    
         const comment = {
-          user: fname,
+          user: userName,
           planName: values.planName,
           timestamp: Timestamp.now(),
         };
@@ -66,18 +59,24 @@ function ModalPlan({isOpen, onClose, fname }) {
     <Modal isOpen={isOpen} onClose={onClose} >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Welcome {fname}</ModalHeader>
+        <ModalHeader>Welcome {userName}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <>
           <div className="plan-container">
-      {posts.map(post => (
-        <div key={post.id} className="plan">
-  <h2 className="heading">
-            <Link to={`/message/${post.id}/${post.planName}`}>{post.planName}</Link>
-          </h2>          </div>
-      ))}
+  {posts
+    .sort((a, b) => a.timestamp - b.timestamp) // Sort posts by timestamp in descending order
+    .map(post => (
+      <div key={post.id} className="plan">
+        <h2 className="heading">
+          <Link to={`/message/${post.id}/${post.planName}`}>{post.planName}</Link>
+        </h2>
       </div>
+    ))}
+</div>
+
+
+
           <Formik
       initialValues={{ planName: '' }}
       onSubmit={(values, { resetForm }) => {
