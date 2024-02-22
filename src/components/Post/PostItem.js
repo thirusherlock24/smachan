@@ -11,7 +11,7 @@ function PostItem({ post, userName }) {
   };
 
   return (
-<div key={post.id} className="post">
+    <div key={post.id} className="post">
       <h2 className="heading">{post.title}</h2>
       <div className="date">
         <span>{formatDate(post.timestamp)}</span>
@@ -22,7 +22,6 @@ function PostItem({ post, userName }) {
       </div>
       <p>{post.content}</p>
       <Button mt={2} colorScheme="blue" onClick={handleShowComments}>Comments</Button> 
-  
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <ModalOverlay />
@@ -39,7 +38,6 @@ function PostItem({ post, userName }) {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    
     </div>
   );
 }

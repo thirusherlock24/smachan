@@ -30,6 +30,7 @@
 
 .post-name li {
   margin-bottom: 10px;
+  cursor: pointer;
 }
 
 .post-container {
