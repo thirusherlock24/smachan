@@ -74,7 +74,7 @@ const sortongoingPosts = ongoingPosts.sort((a, b) => a.timestamp - b.timestamp);
           <div className="plan-container">
           {successPosts.length > 0 && (
   <div className="plan-container">
-    <h2 className="heading" style={{ fontWeight: 'bold', marginBottom: '10px' }}>Success</h2>
+    <h2 className="heading" style={{ fontWeight: 'bold', marginBottom: '10px' }}>Memories</h2>
     <ul style={{ marginLeft: '20px', color:'brown' }}>
       {sortsuccessPosts.map(post => (
         <li key={post.id} className="plan">

@@ -93,7 +93,7 @@ return(
                   </FormControl>
                 )}
               </Field>
-              <Select placeholder="Select a plan" onChange={(e) => setSelectedPlan(e.target.value)}>
+              <Select placeholder="Tag a plan" onChange={(e) => setSelectedPlan(e.target.value)}>
         {posts && posts.map(post => (
           <option key={post.id} value={post.planName}>{post.planName}</option>
         ))}

@@ -1,4 +1,36 @@
 /* styles.css */
+.post-wrapper {
+  display: flex;
+}
+
+.plans-heading {
+  text-align: center;
+  margin-bottom: 35px; /* Adjust margin as needed */
+}
+
+.plans-title {
+  font-size: 2rem; /* Adjust font size as needed */
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+
+}
+
+
+
+.post-name {
+  width: 20%;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 3%;
+}
+.post-name ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.post-name li {
+  margin-bottom: 10px;
+}
 
 .post-container {
     display: flex;
@@ -6,6 +38,8 @@
     flex-direction: column;
     justify-content: center;
     align-items:center;
+    width: 70%;
+
 }
 
 .post {

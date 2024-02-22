@@ -144,7 +144,7 @@ function Message() {
     </Form>
   ) : (
     <>
-      <p>This chat is ended because the plan moved to success, turn to Ongoing?</p>
+      <p>This chat is ended because the plan moved to Memories, turn to Ongoing?</p>
       <Button onClick={handleOngoing} colorScheme="blue" mt={3}>
         Ongoing
       </Button>
@@ -155,6 +155,9 @@ function Message() {
         <Button onClick={handleGoBack} style={{ marginLeft: '40px', }} colorScheme="blue" mt={4}>
           Exit from plan
         </Button>
+       {isOngoing && <p style={{ marginLeft: '40px',marginTop:'30px' }}>  <strong>Click success to move plans to Memories.</strong>
+</p>}
+
       </div>
     </div>
   );

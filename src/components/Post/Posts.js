@@ -3,6 +3,7 @@ import { db } from '../../Firebase';
 import { collection, addDoc, getDocs, Timestamp, query, where, onSnapshot } from "firebase/firestore";
 import PostItem from './PostItem';
 import './Post.css';
+
 function Posts({ userName }) {
   const [posts, setPosts] = useState([]);
 
@@ -33,10 +34,24 @@ function Posts({ userName }) {
   }, []);
 
   return (
-    <div className="post-container">
-      {posts.map(post => (
-        <PostItem key={post.id} post={post} userName={userName} />
-      ))}
+    <div className="post-wrapper">
+       <div className="post-name">
+       <div className="plans-heading">
+      <h1 className="plans-title">Plans</h1>
+    </div>
+        <ul>
+          {/* Render post names here */}
+          {posts.map(post => (
+            <li key={post.id}>{post.title}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="post-container">
+        {posts.map(post => (
+          <PostItem key={post.id} post={post} userName={userName} />
+        ))}
+      </div>
+     
     </div>
   );
 }
